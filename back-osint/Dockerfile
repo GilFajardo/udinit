@@ -1,7 +1,6 @@
 FROM php:8.2-apache
 
 # 1. Instalar dependencias del sistema.
-# SE AGREGO: 'git' a la lista para que Composer no falle.
 RUN apt-get update && apt-get install -y \
     git \
     libpng-dev \
@@ -24,7 +23,7 @@ COPY . .
 # 5. Instalar dependencias de Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# 6. Configurar Apache (Formato corregido key=value)
+# 6. Configurar Apache
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
@@ -32,16 +31,16 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 # 7. Habilitar mod_rewrite
 RUN a2enmod rewrite
 
-# 8. Permisos
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# 8. Permisos (CORREGIDO PARA EVITAR PERMISSION DENIED)
+# Se asegura la propiedad y los permisos de escritura antes de arrancar
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache && \
+    chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
+# Cambiar puerto de 80 a 8080
 RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
-
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache && \
-    chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # 9. Puerto
 EXPOSE 8080
 
-# 10. Comando de inicio: Migrar base de datos y encender Apache
+# 10. Comando de inicio
 CMD php artisan migrate --force && apache2-foreground
