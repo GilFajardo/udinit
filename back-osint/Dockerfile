@@ -39,3 +39,6 @@ RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.
 
 # 9. Puerto
 EXPOSE 8080
+
+# 10. Comando de inicio: Migrar base de datos y encender Apache
+CMD php artisan migrate --force && apache2-foreground
