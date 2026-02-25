@@ -46,5 +46,6 @@ EXPOSE 8080
 RUN echo "PassEnv DB_CONNECTION DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSWORD APP_KEY APP_ENV APP_DEBUG APP_URL" > /etc/apache2/conf-available/environment.conf
 RUN a2enconf environment
 
+# Force rebuild 2
 # 10. Script de inicio
 CMD bash -c "echo '=== ENV VARS ===' && printenv | grep -E '^(APP_|DB_)' && echo '=== FIN ===' && sleep 30"
