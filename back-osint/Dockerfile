@@ -42,5 +42,9 @@ RUN sed -i 's/80/8080/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.
 # 9. Puerto
 EXPOSE 8080
 
-# 10. Comando de inicio
-CMD php artisan migrate --force && apache2-foreground
+# Pasar variables de entorno a Apache
+RUN echo "PassEnv DB_CONNECTION DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSWORD APP_KEY APP_ENV APP_DEBUG APP_URL" > /etc/apache2/conf-available/environment.conf
+RUN a2enconf environment
+
+# 10. Script de inicio
+CMD bash -c "php artisan config:clear && php artisan migrate --force && apache2-foreground"
