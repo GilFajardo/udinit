@@ -47,4 +47,4 @@ RUN echo "PassEnv DB_CONNECTION DB_HOST DB_PORT DB_DATABASE DB_USERNAME DB_PASSW
 RUN a2enconf environment
 
 # 10. Script de inicio
-CMD bash -c "printenv | grep -E '^(APP_|DB_)' | sed 's/=\(.*\)/=\"\1\"/' > /var/www/html/.env && cat /var/www/html/.env && php artisan config:clear && php artisan key:generate --force && php artisan migrate --force && apache2-foreground"
+CMD bash -c "echo '=== ENV VARS ===' && printenv | grep -E '^(APP_|DB_)' && echo '=== FIN ===' && sleep 30"
